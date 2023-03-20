@@ -3,8 +3,12 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:ijob_app/Services/global_methods.dart';
 import 'package:ijob_app/Services/global_variables.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,15 +37,26 @@ class _SignUpScreenState extends State<SignUpScreen> with TickerProviderStateMix
   final FocusNode _positionCPFocusNode = FocusNode();
 
   bool _obscureText = true;
-  final bool _isLoading = false;
+  bool _isLoading = false;
 
   final _signUpFormKey = GlobalKey<FormState>();
 
   File? imageFile;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? imageUrl;
 
   @override
   void dispose() {
     _animationController.dispose();
+    _fullNameTextEditingController.dispose();
+    _emailTextEditingController.dispose();
+    _passwordTextEditingController.dispose();
+    _phoneNumberTextEditingController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    _locationTextEditingController.dispose();
+    _positionCPFocusNode.dispose();
+    _phoneNumberFocusNode.dispose();
     super.dispose();
   }
 
@@ -158,6 +173,56 @@ class _SignUpScreenState extends State<SignUpScreen> with TickerProviderStateMix
         imageFile = File(croppedImage.path);
       });
     }
+  }
+
+  void _submitFormOnSignUp() async {
+    final isValid = _signUpFormKey.currentState!.validate();
+    if(isValid){
+      if(imageFile == null){
+        GlobalMethod.showErrorDialog(
+            error: 'Please select an image',
+            ctx: context
+        );
+        return;
+      }
+      setState(() {
+        _isLoading = true;
+      });
+      try{
+        await _auth.createUserWithEmailAndPassword(
+            email: _emailTextEditingController.text.trim().toLowerCase(), 
+            password: _passwordTextEditingController.text.trim(),
+        );
+        final User? user = _auth.currentUser;
+        final _uid = user!.uid;
+        final ref = FirebaseStorage.instance.ref().child('userImages').child('$_uid.jpg');
+        await ref.putFile(imageFile!);
+        imageUrl = await ref.getDownloadURL();
+        FirebaseFirestore.instance.collection('users').doc(_uid).set({
+          'id': _uid,
+          'name': _fullNameTextEditingController.text,
+          'email': _emailTextEditingController.text,
+          'userImage': imageUrl,
+          'phoneNumber': _phoneNumberTextEditingController.text,
+          'location': _locationTextEditingController.text,
+          'createdAt': Timestamp.now(),
+        });
+        Navigator.canPop(context) ? Navigator.pop(context) : null;
+
+      }
+      catch(error){
+        setState(() {
+          _isLoading = false;
+        });
+        GlobalMethod.showErrorDialog(
+            error: error.toString(),
+            ctx: context
+        );
+      }
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -415,9 +480,7 @@ class _SignUpScreenState extends State<SignUpScreen> with TickerProviderStateMix
                             :
                             MaterialButton(
                               onPressed: (){
-
-                                //I will create submit form on sign up
-
+                                _submitFormOnSignUp();
                               },
                               color: Colors.cyan,
                               elevation: 8,

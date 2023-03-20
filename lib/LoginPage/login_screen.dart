@@ -2,9 +2,11 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:ijob_app/ForgetPassword/forget_password_screen.dart';
 import 'package:ijob_app/Services/global_methods.dart';
+import 'package:ijob_app/SignUpPagee/signup_screen.dart';
 
 import '../Services/global_variables.dart';
 
@@ -32,6 +34,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   @override
   void dispose() {
     _animationController.dispose();
+    _emailTextEditingController.dispose();
+    _passwordTextEditingController.dispose();
+    _passFocusNode.dispose();
     super.dispose();
   }
 
@@ -120,6 +125,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     key: _loginFormKey,
                     child: Column(
                       children: [
+                        //Email Field
                         TextFormField(
                           textInputAction: TextInputAction.next,
                           onEditingComplete: () => FocusScope.of(context).requestFocus(_passFocusNode),
@@ -154,6 +160,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                           ),
                         ),
                         const SizedBox(height: 5,),
+
+                        //Password Field
                         TextFormField(
                           textInputAction: TextInputAction.next,
                           focusNode: _passFocusNode,
@@ -237,6 +245,34 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 40,),
+                        Center(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: 'Do not have an account?',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16
+                                  ),
+                                ),
+                                const TextSpan(text: '  '),
+                                TextSpan(
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpScreen())),
+                                  text: 'Sign Up Now',
+                                  style: const TextStyle(
+                                    color: Colors.cyan,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ],

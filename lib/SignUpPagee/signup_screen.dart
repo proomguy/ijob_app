@@ -1,9 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:ijob_app/Services/global_variables.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -60,6 +64,102 @@ class _SignUpScreenState extends State<SignUpScreen> with TickerProviderStateMix
     super.initState();
   }
 
+  void _showImageDialog(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            backgroundColor: Colors.amber.shade200,
+            title: const Text(
+                'Please choose an option...',
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontSize: 30,
+                  fontFamily: 'Signatra'
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: (){
+                    //Create a method that will capture image from camera
+                    _getFromCamera();
+                  },
+                  child: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: Icon(
+                          Icons.camera,
+                          color: Colors.deepOrange,
+                        ),
+                      ),
+                      Text(
+                        'Use Phone Camera',
+                        style: TextStyle(
+                          color: Colors.lightBlue,
+                          fontSize: 25
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10,),
+                InkWell(
+                  onTap: (){
+                    //Create a method that will capture image from Gallery
+                    _getFromGallery();
+                  },
+                  child: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: Icon(
+                          Icons.image,
+                          color: Colors.deepOrange,
+                        ),
+                      ),
+                      Text(
+                        'From Gallery',
+                        style: TextStyle(
+                            color: Colors.lightBlue,
+                          fontSize: 25
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+    );
+  }
+
+  void _getFromCamera() async {
+    XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+    _cropImage(pickedFile!.path);
+    Navigator.pop(context);
+  }
+
+  void _getFromGallery() async {
+    XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    _cropImage(pickedFile!.path);
+    Navigator.pop(context);
+  }
+
+  void _cropImage(filepath) async{
+    CroppedFile? croppedImage = await ImageCropper().cropImage(
+        sourcePath: filepath, maxHeight: 1080, maxWidth: 1080
+    );
+    if(croppedImage != null){
+      setState(() {
+        imageFile = File(croppedImage.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -94,6 +194,7 @@ class _SignUpScreenState extends State<SignUpScreen> with TickerProviderStateMix
                         GestureDetector(
                           onTap: (){
                             // We create showImageDialog
+                            _showImageDialog();
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),

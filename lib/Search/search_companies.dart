@@ -1,18 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ijob_app/Widgets/bottom_nav_bar.dart';
 
-class JobScreen extends StatefulWidget {
-  const JobScreen({Key? key}) : super(key: key);
+import '../Widgets/bottom_nav_bar.dart';
+
+class AllWorkersScreen extends StatefulWidget {
+
 
   @override
-  State<JobScreen> createState() => _JobScreenState();
+  State<AllWorkersScreen> createState() => _AllWorkersScreenState();
 }
 
-class _JobScreenState extends State<JobScreen> {
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
+class _AllWorkersScreenState extends State<AllWorkersScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,9 +23,9 @@ class _JobScreenState extends State<JobScreen> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        bottomNavigationBar: BottomNavigationBarForMyApp(indexNum: 0),
+        bottomNavigationBar: BottomNavigationBarForMyApp(indexNum: 1),
         appBar: AppBar(
-          title: const Text('Apply for Job'),
+          title: const Text('All workers Screen'),
           centerTitle: true,
           flexibleSpace: Container(
             decoration: BoxDecoration(

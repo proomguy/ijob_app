@@ -53,7 +53,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> with Ticker
   void _ForgetPasswordSubmitForm() async{
     try{
       await _auth.sendPasswordResetEmail(
-          email: _forgetPasswordTextEditingController.text,
+          email: _forgetPasswordTextEditingController.text.trim().toLowerCase(),
       );
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
     }

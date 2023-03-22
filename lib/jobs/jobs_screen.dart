@@ -10,6 +10,10 @@ class JobScreen extends StatefulWidget {
 class _JobScreenState extends State<JobScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Apply for jobs"),
+      ),
+    );
   }
 }

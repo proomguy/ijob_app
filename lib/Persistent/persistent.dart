@@ -1,5 +1,5 @@
 class Persistent{
-  static List<String> jobjCategoryList = [
+  static List<String> jobCategoryList = [
     'Architecture and Construction',
     'education and Training',
     'Development - Programming',

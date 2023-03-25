@@ -108,8 +108,8 @@ class _UploadJobNowState extends State<UploadJobNow> {
                     onTap: (){
                       setState(() {
                         _jobCategoryTextEditingController.text = Persistent.jobCategoryList[index];
-                        Navigator.pop(context);
                       });
+                      Navigator.pop(context);
                     },
                     child: Row(
                       children: [

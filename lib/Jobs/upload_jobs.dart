@@ -123,7 +123,7 @@ class _UploadJobNowState extends State<UploadJobNow> {
                             Persistent.jobCategoryList[index],
                             style: const TextStyle(
                               color: Colors.black,
-                              fontSize: 16,
+                              fontSize: 20,
                             ),
                           ),
                         ),
@@ -142,7 +142,7 @@ class _UploadJobNowState extends State<UploadJobNow> {
                     'Cancel',
                     style: TextStyle(
                       color: Colors.redAccent,
-                      fontSize: 16
+                      fontSize: 20
                     ),
                   ),
               ),
@@ -248,6 +248,21 @@ class _UploadJobNowState extends State<UploadJobNow> {
     _jobDescriptionTextEditingController.dispose();
     _deadlineDateTextEditingController.dispose();
     super.dispose();
+  }
+  
+  void getMyData() async{
+    final DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get();
+    setState(() {
+      name = userDoc.get('name');
+      userImage = userDoc.get('userImage');
+      location = userDoc.get('location');
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getMyData();
   }
 
   @override

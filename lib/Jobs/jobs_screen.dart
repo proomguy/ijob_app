@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ijob_app/Search/search_job.dart';
 import 'package:ijob_app/Widgets/bottom_nav_bar.dart';
+import 'package:ijob_app/Widgets/job_widget.dart';
 
 import '../Persistent/persistent.dart';
 
@@ -23,7 +25,7 @@ class _JobScreenState extends State<JobScreen> {
         context: context,
         builder: (ctx){
           return AlertDialog(
-            backgroundColor: Colors.cyanAccent,
+            backgroundColor: Colors.cyanAccent.shade100,
             title: const Text(
               ' Filter Job Category',
               textAlign: TextAlign.center,
@@ -53,7 +55,7 @@ class _JobScreenState extends State<JobScreen> {
                     child: Row(
                       children: [
                         const Icon(
-                          Icons.arrow_right_alt_outlined,
+                          Icons.arrow_right,
                           color: Colors.amber,
                         ),
                         Padding(
@@ -62,7 +64,7 @@ class _JobScreenState extends State<JobScreen> {
                             Persistent.jobCategoryList[index],
                             style: const TextStyle(
                               color: Colors.black,
-                              fontSize: 16,
+                              fontSize: 20,
                             ),
                           ),
                         ),
@@ -81,7 +83,7 @@ class _JobScreenState extends State<JobScreen> {
                   'Close',
                   style: TextStyle(
                       color: Colors.redAccent,
-                      fontSize: 16
+                      fontSize: 20
                   ),
                 ),
               ),
@@ -95,7 +97,8 @@ class _JobScreenState extends State<JobScreen> {
                   child: const Text(
                     'Cancel Filter',
                     style: TextStyle(
-                      color: Colors.white
+                      color: Colors.black,
+                      fontSize: 20
                     ),
                   ),
               ),
@@ -133,13 +136,13 @@ class _JobScreenState extends State<JobScreen> {
           ),
           automaticallyImplyLeading: false,
           leading: IconButton(
+            onPressed: (){
+              _showJobCategoryDialog(size: size);
+            },
             icon: const Icon(
               Icons.filter_list_rounded,
               color: Colors.black,
             ),
-            onPressed: (){
-              _showJobCategoryDialog(size: size);
-            },
           ),
           actions: [
             IconButton(
@@ -153,6 +156,65 @@ class _JobScreenState extends State<JobScreen> {
             ),
           ],
         ),
+        body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance
+              .collection('jobs')
+              .where('jobCategory', isEqualTo: jobCategoryFilter)
+              .where('jobRecruitment', isEqualTo: true)
+              .orderBy('createdAt',descending: false)
+              .snapshots(),
+          builder: (context, AsyncSnapshot snapshot){
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            else if(snapshot.connectionState == ConnectionState.active){
+              if(snapshot.data?.docs.isNotEmpty == true){
+                return ListView.builder(
+                    itemCount: snapshot.data?.docs.length,
+                    itemBuilder: (BuildContext context, int index){
+                      return JobWidget(
+                          jobTitle: snapshot.data?.docs[index]['jobTitle'],
+                          jobDescription: snapshot.data?.docs[index]['jobDescription'],
+                          jobId: snapshot.data?.docs[index]['jobId'],
+                          upLoadedBy: snapshot.data?.docs[index]['upLoadedBy'],
+                          userImage: snapshot.data?.docs[index]['userImage'],
+                          name: snapshot.data?.docs[index]['name'],
+                          jobRecruitment: snapshot.data?.docs[index]['jobRecruitment'],
+                          email: snapshot.data?.docs[index]['email'],
+                          location: snapshot.data?.docs[index]['location'],
+                      );
+                    }
+                );
+              }
+              else{
+                return const Center(
+                  child: Text(
+                    'There are no Jobs available',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.purple
+                    ),
+                  ),
+                );
+              }
+            }
+            return  const Center(
+              child: Text(
+                'Something went serious wrong',
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.purple
+                ),
+              ),
+            );
+          },
+        )
       ),
     );
   }

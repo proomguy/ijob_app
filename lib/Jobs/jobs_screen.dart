@@ -18,7 +18,7 @@ class _JobScreenState extends State<JobScreen> {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.orangeAccent.shade200, Colors.cyanAccent.shade200],
+          colors: [Colors.green.shade200, Colors.blueGrey.shade200],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           stops: const [0.2, 0.9],
@@ -28,19 +28,27 @@ class _JobScreenState extends State<JobScreen> {
         backgroundColor: Colors.transparent,
         bottomNavigationBar: BottomNavigationBarForMyApp(indexNum: 0),
         appBar: AppBar(
-          title: const Text('Apply for Job'),
-          centerTitle: true,
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.cyanAccent.shade200, Colors.orangeAccent.shade200],
+                colors: [Colors.blueGrey.shade200, Colors.green.shade200],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 stops: const [0.2, 0.9],
               ),
             ),
           ),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.filter_list_rounded,
+              color: Colors.black,
+            ),
+            onPressed: (){
+              
+            },
+          ),
         ),
+
       ),
     );
   }

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ijob_app/Persistent/persistent.dart';
 import 'package:ijob_app/Services/global_methods.dart';
 import 'package:uuid/uuid.dart';
-
 import '../Services/global_variables.dart';
 import '../Widgets/bottom_nav_bar.dart';
 
@@ -234,7 +234,9 @@ class _UploadJobNowState extends State<UploadJobNow> {
       }
     }
     else{
-      print('Its not valid');
+      if (kDebugMode) {
+        print('Its not valid');
+      }
     }
 
   }

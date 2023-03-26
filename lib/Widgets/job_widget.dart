@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:ijob_app/Jobs/job_details_screen.dart';
 import 'package:ijob_app/Services/global_methods.dart';
 
 class JobWidget extends StatefulWidget {
@@ -109,7 +110,7 @@ class _JobWidgetState extends State<JobWidget> {
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: ListTile(
         onTap: (){
-          
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => JobDetailsScreen()));
         },
         onLongPress: (){
           _deleteDialog();

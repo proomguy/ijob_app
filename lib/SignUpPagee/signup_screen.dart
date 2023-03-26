@@ -201,9 +201,9 @@ class _SignUpScreenState extends State<SignUpScreen> with TickerProviderStateMix
         FirebaseFirestore.instance.collection('users').doc(_uid).set({
           'id': _uid,
           'name': _fullNameTextEditingController.text,
-          'email': _emailTextEditingController.text,
+          'email': _emailTextEditingController.text.trim(),
           'userImage': imageUrl,
-          'phoneNumber': _phoneNumberTextEditingController.text,
+          'phoneNumber': _phoneNumberTextEditingController.text.trim(),
           'location': _locationTextEditingController.text,
           'createdAt': Timestamp.now(),
         });

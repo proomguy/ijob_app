@@ -110,7 +110,10 @@ class _JobWidgetState extends State<JobWidget> {
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: ListTile(
         onTap: (){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => JobDetailsScreen()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => JobDetailsScreen(
+            uploadedBy: widget.upLoadedBy,
+            jobID: widget.jobId,
+          )));
         },
         onLongPress: (){
           _deleteDialog();

@@ -4,9 +4,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ijob_app/Jobs/jobs_screen.dart';
 import 'package:ijob_app/Services/global_methods.dart';
+import 'package:ijob_app/Services/global_variables.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:uuid/uuid.dart';
 
 class JobDetailsScreen extends StatefulWidget {
 
@@ -40,6 +43,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
   String? emailCompany = '';
   int applicants = 0;
   bool isDeadlineAvailable = false;
+  bool _isCommenting = false;
+  bool showComment = false;
+  final TextEditingController commentTextEditingController = TextEditingController();
 
   void getJobData() async{
 
@@ -122,6 +128,12 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       'applicants': applicants + 1,
     });
     Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    commentTextEditingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -474,6 +486,150 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           ],
                         ),
                         dividerWidget(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Card(
+                  color: Colors.black54,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AnimatedSwitcher(
+                          duration: const Duration(
+                            milliseconds: 500,
+                          ),
+                          child: _isCommenting ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                flex: 3,
+                                child: TextField(
+                                  controller: commentTextEditingController,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+
+                                  ),
+                                  maxLength: 200,
+                                  keyboardType: TextInputType.text,
+                                  maxLines: 6,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                    enabledBorder: const UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.white),
+                                    ),
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.pink),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                                      child: MaterialButton(
+                                        onPressed: () async {
+                                          if(commentTextEditingController.text.length < 7){
+                                            GlobalMethod.showErrorDialog(
+                                                error: 'Too short comment',
+                                                ctx: context
+                                            );
+                                          }
+                                          else{
+                                           final _generatedId = const Uuid().v4();
+                                           await FirebaseFirestore.instance.collection('jobs').doc(widget.jobID).update({
+                                             'jobComments': FieldValue.arrayUnion([{
+                                               'userId': FirebaseAuth.instance.currentUser!.uid,
+                                               'commentId': _generatedId,
+                                               'name': name,
+                                               'userImageUrl': userImage,
+                                               'commentBody': commentTextEditingController.text,
+                                               'time': Timestamp.now(),
+                                             }]),
+                                           });
+                                           await Fluttertoast.showToast(
+                                             msg: 'Your Comment has been Received',
+                                             toastLength: Toast.LENGTH_LONG,
+                                             backgroundColor: Colors.lightGreenAccent,
+                                             fontSize: 18.0,
+                                           );
+                                           commentTextEditingController.clear();
+                                          }
+                                          setState(() {
+                                            showComment = true;
+                                          });
+                                        },
+                                        color: Colors.blueAccent,
+                                        elevation: 4,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: const Text(
+                                          'Post',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    TextButton(
+                                        onPressed: (){
+                                          setState(() {
+                                            _isCommenting = !_isCommenting;
+                                            showComment = false;
+                                          });
+
+                                        },
+                                        child: const Text(
+                                          'Cancel'
+                                        ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ) : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                  onPressed: (){
+                                    setState(() {
+                                      _isCommenting = !_isCommenting;
+                                    });
+
+                                  },
+                                  icon: const Icon(
+                                    Icons.add_comment,
+                                    color: Colors.blueAccent,
+                                    size: 40,
+                                  ),
+                              ),
+                              const SizedBox(width: 10,),
+                              IconButton(
+                                onPressed: (){
+                                  setState(() {
+                                    showComment = false;
+                                  });
+                                },
+                                icon: const Icon(
+                                  Icons.arrow_drop_down_circle,
+                                  color: Colors.blueAccent,
+                                  size: 40,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),

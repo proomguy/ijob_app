@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ijob_app/Jobs/jobs_screen.dart';
 import 'package:ijob_app/Services/global_methods.dart';
 import 'package:ijob_app/Services/global_variables.dart';
+import 'package:ijob_app/Widgets/comments_widget.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:uuid/uuid.dart';
 
@@ -618,7 +619,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                               IconButton(
                                 onPressed: (){
                                   setState(() {
-                                    showComment = false;
+                                    showComment = true;
                                   });
                                 },
                                 icon: const Icon(
@@ -628,6 +629,45 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                 ),
                               ),
                             ],
+                          ),
+                        ),
+                        showComment == false ? Container() : Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: FutureBuilder<DocumentSnapshot>(
+                            future: FirebaseFirestore.instance.collection('jobs').doc(widget.jobID).get(),
+                            builder: (context, snapshot){
+                              if(snapshot.connectionState == ConnectionState.waiting){
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              else{
+                                if(snapshot.data == null){
+                                  return const Center(
+                                    child: Text(
+                                        'No comments Available for this Job'
+                                    ),
+                                  );
+                                }
+                              }
+                              return ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index){
+                                    return CommentWidget(
+                                        commentId: snapshot.data!['jobComments'][index]['commentId'],
+                                        commenterId: snapshot.data!['jobComments'][index]['userId'],
+                                        commenterName: snapshot.data!['jobComments'][index]['name'],
+                                        commentBody: snapshot.data!['jobComments'][index]['commentBody'],
+                                        commenterImageUrl: snapshot.data!['jobComments'][index]['userImageUrl'],
+                                    );
+                                  },
+                                  separatorBuilder: (context, index){
+                                    return dividerWidget();
+                                  },
+                                  itemCount: snapshot.data!['jobComments'].length,
+                              );
+                            },
                           ),
                         ),
                       ],

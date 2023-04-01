@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ijob_app/Search/profile_company.dart';
 
 class CommentWidget extends StatefulWidget {
 
@@ -38,6 +39,8 @@ class _CommentWidgetState extends State<CommentWidget> {
     _colorsList.shuffle();
     return InkWell(
       onTap: (){
+
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfileScreen(userID: widget.commenterId)));
 
       },
       child: Row(

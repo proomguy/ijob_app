@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:ijob_app/Services/global_methods.dart';
 import 'package:ijob_app/Widgets/bottom_nav_bar.dart';
@@ -240,14 +239,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   fxt: (){
                                     _callPhoneNumber();
                                   },
-                                  iconData: Icons.phone
+                                  iconData: Icons.phone_outlined
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 25,),
-                          const Divider(
-                            thickness: 1,
-                            color: Colors.white,
                           ),
                           const SizedBox(height: 25,),
                           !_isSameUser ? Container() : Center(

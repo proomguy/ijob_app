@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
+import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:ijob_app/Services/global_methods.dart';
 import 'package:ijob_app/Widgets/bottom_nav_bar.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -95,6 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: color,
       radius: 25,
       child: CircleAvatar(
+        radius: 23,
         backgroundColor: Colors.white,
         child: IconButton(
           icon: Icon(
@@ -110,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _openWhatsAppChat() async{
-    var url = 'https://wa.me/$phoneNumber?text=Greetings, kindly, drop your comments here about the job';
+    var url = 'https://wa.me/$phoneNumber?text=HelloWorld';
     launchUrlString(url);
   }
 
@@ -208,6 +211,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 iconData: Icons.phone,
                                 content: phoneNumber!
                             ),
+                          ),
+                          const SizedBox(height: 15,),
+                          const Divider(
+                            thickness: 1,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(height: 35,),
+                          _isSameUser ? Container() : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _contactBy(
+                                  color: Colors.green,
+                                  fxt: (){
+                                    _openWhatsAppChat();
+                                  },
+                                  iconData: FontAwesome.whatsapp
+                              ),
+                              _contactBy(
+                                  color: Colors.redAccent,
+                                  fxt: (){
+                                    _mailTo();
+                                  },
+                                  iconData: Icons.mail_outlined
+                              ),
+                              _contactBy(
+                                  color: Colors.lightGreen,
+                                  fxt: (){
+                                    _callPhoneNumber();
+                                  },
+                                  iconData: Icons.phone
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 25,),
                           const Divider(

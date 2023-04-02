@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ijob_app/Services/global_methods.dart';
 import 'package:ijob_app/Widgets/bottom_nav_bar.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+
+import '../user_state.dart';
 
 class ProfileScreen extends StatefulWidget {
 
@@ -50,10 +54,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
     catch(error){
-      _isLoading = false;
+      GlobalMethod.showErrorDialog(
+          error: error.toString(),
+          ctx: context
+      );
     }
     finally{
-
+      _isLoading = false;
     }
   }
 
@@ -83,9 +90,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _contactBy({required Color color, required Function fxt, required IconData iconData}){
+    return CircleAvatar(
+      backgroundColor: color,
+      radius: 25,
+      child: CircleAvatar(
+        backgroundColor: Colors.white,
+        child: IconButton(
+          icon: Icon(
+            iconData,
+            color: color,
+          ),
+          onPressed: (){
+            fxt();
+          },
+        ),
+      ),
+    );
+  }
+
+  void _openWhatsAppChat() async{
+    var url = 'https://wa.me/$phoneNumber?text=Greetings, kindly, drop your comments here about the job';
+    launchUrlString(url);
+  }
+
+  void _mailTo() async{
+    final Uri params = Uri(
+      scheme: 'mailto',
+      path: email,
+      query: 'subject=Greetings from $name &body=Hello, Kindly contact me on this email about your job comments',
+    );
+    final url = params.toString();
+    launchUrlString(url);
+  }
+
+  void _callPhoneNumber() async{
+    var url = 'tel://$phoneNumber';
+    launchUrlString(url);
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -135,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             thickness: 1,
                             color: Colors.white,
                           ),
-                          const SizedBox(height: 30,),
+                          const SizedBox(height: 24,),
                           const Padding(
                             padding: EdgeInsets.all(10.0),
                             child: Text(
@@ -149,20 +196,91 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 15,),
                           Padding(
                             padding: const EdgeInsets.only(left: 10),
-                            child: userInfo(iconData: Icons.email, content: email!),
+                            child: userInfo(
+                                iconData: Icons.email,
+                                content: email!
+                            ),
                           ),
+                          const SizedBox(height: 10,),
                           Padding(
                             padding: const EdgeInsets.only(left: 10),
-                            child: userInfo(iconData: Icons.phone, content: phoneNumber!),
+                            child: userInfo(
+                                iconData: Icons.phone,
+                                content: phoneNumber!
+                            ),
                           ),
-                          const SizedBox(height: 30,),
+                          const SizedBox(height: 25,),
                           const Divider(
                             thickness: 1,
                             color: Colors.white,
                           ),
+                          const SizedBox(height: 25,),
+                          !_isSameUser ? Container() : Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 30.0),
+                              child: MaterialButton(
+                                onPressed: (){
+                                  _auth.signOut();
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UserState()));
+                                },
+                                color: Colors.cyanAccent,
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 14),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Log Out',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.normal,
+                                          fontFamily: 'Signatra',
+                                          fontSize: 28,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10,),
+                                      Icon(
+                                        Icons.logout_outlined,
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: size.width * 0.26,
+                        height: size.width * 0.26,
+                        decoration: BoxDecoration(
+                          color: Colors.cyanAccent,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            width: 8,
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                          ),
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              imageUrl == null ? 'https://ionicframework.com/docs/img/demos/avatar.svg' : imageUrl!
+                            ),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

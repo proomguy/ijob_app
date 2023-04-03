@@ -27,7 +27,7 @@ class _JobScreenState extends State<JobScreen> {
           return AlertDialog(
             backgroundColor: Colors.cyanAccent.shade100,
             title: const Text(
-              ' Filter Job Category',
+              'Filter Job Category',
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 25,
@@ -154,7 +154,7 @@ class _JobScreenState extends State<JobScreen> {
           actions: [
             IconButton(
                 onPressed: (){
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => SearchScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (c) => SearchScreen()));
                 },
                 icon: const Icon(
                   Icons.search_outlined,

@@ -19,7 +19,7 @@ class JobWidget extends StatefulWidget {
   final String email;
   final String location;
   
-  const JobWidget ({
+  const JobWidget ({super.key,
     required this.jobTitle,
     required this.jobDescription,
     required this.jobId,

@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:ijob_app/Widgets/all_companies_widget.dart';
 
 import '../Widgets/bottom_nav_bar.dart';
 
@@ -90,6 +92,56 @@ class _AllWorkersScreenState extends State<AllWorkersScreen> {
           automaticallyImplyLeading: false,
           title: _buildSearchField(),
           actions: _buildActions(),
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('users').where('name', isGreaterThanOrEqualTo: searchQuery).snapshots(),
+          builder: (context, AsyncSnapshot snapshot){
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            else if(snapshot.connectionState == ConnectionState.active){
+              if(snapshot.data!.docs.isNotEmpty){
+                return ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (BuildContext context, int index){
+                    return AllWorkersWidget(
+                        userID: snapshot.data!.docs[index]['id'],
+                        userName: snapshot.data!.docs[index]['name'],
+                        userEmail: snapshot.data!.docs[index]['email'],
+                        phoneNumber: snapshot.data!.docs[index]['phoneNumber'],
+                        userImageUrl: snapshot.data!.docs[index]['userImage']
+                    );
+                  },
+                );
+              }
+              else{
+                return const Center(
+                  child: Text(
+                    'There is no such User',
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontFamily: 'Signatra',
+                        fontWeight: FontWeight.normal,
+                        fontStyle: FontStyle.normal
+                    ),
+                  ),
+                );
+              }
+            }
+            return const Center(
+              child: Text(
+                'Something went terribly wrong',
+                style: TextStyle(
+                    fontSize: 30,
+                    fontFamily: 'Signatra',
+                    fontWeight: FontWeight.normal,
+                    fontStyle: FontStyle.normal
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

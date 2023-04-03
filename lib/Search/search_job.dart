@@ -112,7 +112,7 @@ class _SearchScreenState extends State<SearchScreen> {
               );
             }
             else if(snapshot.connectionState == ConnectionState.active){
-              if(snapshot.data?.docs.isNotEmpty == true){
+              if(snapshot.data?.docs.isNotEmpty == true){//Check here
                 return ListView.builder(
                   itemCount: snapshot.data?.docs.length,
                   itemBuilder: (BuildContext context, int index){
